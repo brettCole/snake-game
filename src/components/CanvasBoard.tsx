@@ -36,6 +36,57 @@ const CanvasBoard = ({ height, width }: ICanvasBoard) => {
         generateRandomPosition(width - 20, height - 20)
     );
 
+    const moveSnake = useCallback(
+        (dx = 0, dy = 0, ds: string) => {
+            if (dx > 0 && dy === 0 && ds !== 'RIGHT') {
+                dispatch(makeMove(dx, dy, MOVE_RIGHT));
+            }
+
+            if (dx < 0 && dy === 0 && ds !== 'LEFT') {
+                dispatch(makeMove(dx, dy, MOVE_LEFT));
+            }
+
+            if (dx === 0 && dy < 0 && !== 'UP') {
+                dispatchEvent(makeMove(dx, dy, MOVE_UP));
+            }
+
+            if (dx === 0 && dy > 0 && ds !== 'DOWN') {
+                dispatch(makeMove(dx, dy, MOVE_DOWN));
+            }
+        }, [dispatch]
+    );
+
+    const handleKeyEvents = useCallback(
+        (event: KeyboardEvent) => {
+            if (disallowedDirection) {
+                switch (event.key) {
+                    case 'w':
+                        moveSnake(0, -20, disallowedDirection);
+                        break;
+                    case 's':
+                        moveSnake(0, 20, disallowedDirection);
+                        break;
+                    case 'a':
+                        moveSnake(-20, 0, disallowedDirection);
+                        break;
+                    case 'd':
+                        event.preventDefault();
+                        moveSnake(20, 0, disallowedDirection);
+                        break;
+                }
+            } else {
+                if (
+                    disallowedDirection !== 'LEFT' &&
+                    disallowedDirection !== 'UP' &&
+                    disallowedDirection !== 'DOWN' &&
+                    event.key === 'd'
+                )
+                    moveSnake(20, 0, disallowedDirection); // Move RIGHT at start
+            }
+        },
+        [disallowedDirection, moveSnake]
+    );
+
     useEffect(() => {
         // Draw on canvas each time
         setContext(canvasRef.current && canvasRef.current.getContext('2d')); //store in state variable
