@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {  useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     increaseSnake,
@@ -20,7 +20,7 @@ import {
     generateRandomPosition,
     hasSnakeCollided,
     IObjectBody,
-} from '..utils';
+} from '../utils';
 import Instructions from './Instructions';
 
 export interface ICanvasBoard {
@@ -29,13 +29,27 @@ export interface ICanvasBoard {
 }
 
 const CanvasBoard = ({ height, width }: ICanvasBoard) => {
-    const canvasRef = (useRef <HTMLCanvasElement) | (null > null);
-    const [ context, setContext ] = (useState < CanvasRenderingContext2D) | ( null > null);
+    const canvasRef = useRef <HTMLCanvasElement | null > (null);
+    const [ context, setContext ] = useState < CanvasRenderingContext2D | null > (null);
+    const snake1 = useSelector((state: IGlobalState) => state.snake);
+    const [pos, setPos] = useState<IObjectBody>(
+        generateRandomPosition(width - 20, height - 20)
+    );
 
     useEffect(() => {
         // Draw on canvas each time
         setContext(canvasRef.current && canvasRef.current.getContext('2d')); //store in state variable
+        drawObject(context, snake1, '#91C483'); // Draws snake at the required position
+        drawObject(context, [pos], '#676FA3') // Draws fruit randomly
     }, [context]);
+
+    useEffect(() => {
+        window.addEventListener('keypress', handleKeyEvents);
+
+        return () => {
+            window.removeEventListener('keypress', handleKeyEvents);
+        };
+    }, [disallowedDirection, handleKeyEvents]);
 
     return (
         <canvas
