@@ -90,6 +90,7 @@ const CanvasBoard = ({ height, width }: ICanvasBoard) => {
     useEffect(() => {
         // Draw on canvas each time
         setContext(canvasRef.current && canvasRef.current.getContext('2d')); //store in state variable
+        clearBoard(context);
         drawObject(context, snake1, '#91C483'); // Draws snake at the required position
         drawObject(context, [pos], '#676FA3') // Draws fruit randomly
     }, [context]);
